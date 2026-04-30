@@ -1,12 +1,12 @@
 // ==================== DATA ====================
 const categoryData = [
-{ id: 'Freight', icon: '✈️', title: 'Freight', desc: 'Air and sea freight transportation services', tag: 'Transport' },
-{ id: 'Customs', icon: '🛃', title: 'Customs', desc: 'Customs clearance and regulatory compliance', tag: 'Legal' },
-{ id: 'Handling', icon: '🏗️', title: 'Handling', desc: 'Port and warehouse handling operations', tag: 'Operations' },
-{ id: 'Storage', icon: '🏪', title: 'Storage', desc: 'Port yard and warehouse storage solutions', tag: 'Storage' },
-{ id: 'Trucking', icon: '🚛', title: 'Trucking', desc: 'Inland container and cargo trucking', tag: 'Land Transport' },
-{ id: 'Document', icon: '📄', title: 'Document', desc: 'Documentation and certification services', tag: 'Administration' },
-{ id: 'Additional', icon: '📦', title: 'Additional', desc: 'Special handling and value-added services', tag: 'Value Added' }
+    { id: 'Freight', icon: '✈️', title: 'Freight', desc: 'Air and sea freight transportation services', tag: 'Transport' },
+    { id: 'Customs', icon: '🛃', title: 'Customs', desc: 'Customs clearance and regulatory compliance', tag: 'Legal' },
+    { id: 'Handling', icon: '🏗️', title: 'Handling', desc: 'Port and warehouse handling operations', tag: 'Operations' },
+    { id: 'Storage', icon: '🏪', title: 'Storage', desc: 'Port yard and warehouse storage solutions', tag: 'Storage' },
+    { id: 'Trucking', icon: '🚛', title: 'Trucking', desc: 'Inland container and cargo trucking', tag: 'Land Transport' },
+    { id: 'Document', icon: '📄', title: 'Document', desc: 'Documentation and certification services', tag: 'Administration' },
+    { id: 'Additional', icon: '📦', title: 'Additional', desc: 'Special handling and value-added services', tag: 'Value Added' }
 ];
 
 const serviceItems = {
@@ -130,10 +130,23 @@ const calcFields = {
     ]
 };
 
-// State
+// State Management
 const CART_STORAGE_KEY = 'logi_cart';
 const USERS_STORAGE_KEY = 'logi_users';
 const SETTINGS_STORAGE_KEY = 'logi_settings';
+
+const defaultSettings = {
+    companyName: 'PT. Cahaya Sejati Teknologi',
+    email: 'info@cstlogistic.co.id',
+    phone: '+62 21 1234 5678',
+    address: 'Jl. Gatot Subroto No. 123, Jakarta Selatan',
+    whatsapp: '+62 818-6573-29',
+    taxRate: '11',
+    currency: 'IDR',
+    language: 'id',
+    notifications: true,
+    autoSave: true
+};
 
 const loadCartFromStorage = () => {
     try {
@@ -149,33 +162,6 @@ const defaultUsers = [
     { name: 'Rina Wijaya', email: 'sales@cstlogistic.co.id', role: 'Sales / Agen', status: 'Aktif' }
 ];
 
-const defaultSettings = {
-    companyName: 'PT. Cahaya Sejati Teknologi',
-    email: 'info@cstlogistic.co.id',
-    phone: '+62 21 1234 5678',
-    address: 'Jl. Gatot Subroto No. 123, Jakarta Selatan',
-    whatsapp: '+62 818-6573-29',
-    taxRate: '11',
-    currency: 'IDR',
-    language: 'id',
-    notifications: true,
-    autoSave: true
-};
-
-const loadSettingsFromStorage = () => {
-    try {
-        const saved = JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) || 'null');
-        if (!saved) return {...defaultSettings};
-        return {...defaultSettings, ...saved};
-    } catch (error) {
-        return {...defaultSettings};
-    }
-};
-
-const saveSettingsToStorage = (settings) => {
-    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
-};
-
 const loadUsersFromStorage = () => {
     try {
         const savedUsers = JSON.parse(localStorage.getItem(USERS_STORAGE_KEY) || 'null');
@@ -186,12 +172,26 @@ const loadUsersFromStorage = () => {
     }
 };
 
+const loadSettingsFromStorage = () => {
+    try {
+        const saved = JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) || 'null');
+        if (!saved) return { ...defaultSettings };
+        return { ...defaultSettings, ...saved };
+    } catch (error) {
+        return { ...defaultSettings };
+    }
+};
+
 const saveCartToStorage = () => {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state.cart));
 };
 
 const saveUsersToStorage = () => {
     localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(state.users));
+};
+
+const saveSettingsToStorage = (settings) => {
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
 };
 
 const state = {
@@ -205,7 +205,7 @@ const state = {
     orders: JSON.parse(localStorage.getItem('logi_orders') || '[]')
 };
 
-// Utility
+// Utility Functions
 const formatNumber = (num) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
 const showToast = (msg) => {
@@ -296,11 +296,14 @@ const showPage = (pageName) => {
     document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
     const target = document.getElementById(`page-${pageName}`);
-    if (target) { target.classList.add('active'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    if (target) {
+        target.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     state.currentPage = pageName;
     document.querySelectorAll('.nav-link').forEach(link => {
         const text = link.textContent.trim().toLowerCase();
-        if ((pageName === 'home' && text === 'beranda') || 
+        if ((pageName === 'home' && text === 'beranda') ||
             (pageName === 'services' && text === 'layanan') ||
             (pageName === 'products' && text === 'produk') ||
             (pageName === 'about' && text === 'tentang kami') ||
@@ -334,7 +337,7 @@ const selectCategory = (catId) => {
     document.getElementById('categoriesGrid').style.display = 'none';
     document.getElementById('itemsView').classList.add('active');
     document.getElementById('itemsTitle').textContent = `${catId} Services`;
-    
+
     const items = serviceItems[catId] || [];
     document.getElementById('itemsContainer').innerHTML = items.map(item => `
         <div class="item-row" onclick="selectItem('${catId}', '${item.id}')">
@@ -357,14 +360,14 @@ const showCategories = () => {
 const selectItem = (catId, itemId) => {
     state.currentCategory = catId;
     state.currentItem = serviceItems[catId].find(i => i.id === itemId);
-    
+
     document.getElementById('itemsView').classList.remove('active');
     document.getElementById('calcView').classList.add('active');
-    
+
     document.getElementById('calcIcon').textContent = state.currentItem.icon;
     document.getElementById('calcTitle').textContent = state.currentItem.name;
     document.getElementById('calcSubtitle').textContent = state.currentItem.subtitle;
-    
+
     const fields = calcFields[catId] || [];
     let fieldsHTML = fields.map(f => {
         let input = '';
@@ -398,14 +401,17 @@ const submitCalculation = () => {
             el.classList.remove('error');
         }
     });
-    if (!valid) { showToast('Please fill in all required fields'); return; }
+    if (!valid) {
+        showToast('Please fill in all required fields');
+        return;
+    }
 
     let base = Math.floor(Math.random() * 5000000) + 500000;
     const qty = parseInt(formData.quantity) || 1;
     const weight = parseInt(formData.weight) || 0;
     const days = parseInt(formData.days) || 1;
     const val = parseFloat(formData.goodsValue) || 0;
-    
+
     if (state.currentCategory === 'Freight') base += weight * (state.currentItem.name.includes('Air') ? 25000 : 5000);
     else if (state.currentCategory === 'Customs') base += (val * 0.21 * 16000);
     else if (state.currentCategory === 'Storage') base *= days;
@@ -426,8 +432,14 @@ const submitCalculation = () => {
 };
 
 // Admin Functions
-const openAdmin = () => { document.getElementById('adminOverlay').classList.add('active'); showAdminPage('dashboard'); };
-const closeAdmin = () => { document.getElementById('adminOverlay').classList.remove('active'); };
+const openAdmin = () => {
+    document.getElementById('adminOverlay').classList.add('active');
+    showAdminPage('dashboard');
+};
+
+const closeAdmin = () => {
+    document.getElementById('adminOverlay').classList.remove('active');
+};
 
 const showAdminPage = (pageName) => {
     document.querySelectorAll('.admin-page-content').forEach(p => p.style.display = 'none');
@@ -444,17 +456,24 @@ const showAdminPage = (pageName) => {
 // ==================== FITUR PENGATURAN ====================
 const loadSettings = () => {
     const settings = state.settings;
-    
+
     // Isi form dengan data yang tersimpan
-    document.getElementById('settingCompanyName').value = settings.companyName || '';
-    document.getElementById('settingEmail').value = settings.email || '';
-    document.getElementById('settingPhone').value = settings.phone || '';
-    document.getElementById('settingAddress').value = settings.address || '';
-    document.getElementById('settingWhatsapp').value = settings.whatsapp || '';
-    document.getElementById('settingTaxRate').value = settings.taxRate || '11';
-    document.getElementById('settingCurrency').value = settings.currency || 'IDR';
-    document.getElementById('settingLanguage').value = settings.language || 'id';
-    
+    const fields = {
+        'settingCompanyName': settings.companyName,
+        'settingEmail': settings.email,
+        'settingPhone': settings.phone,
+        'settingAddress': settings.address,
+        'settingWhatsapp': settings.whatsapp,
+        'settingTaxRate': settings.taxRate,
+        'settingCurrency': settings.currency,
+        'settingLanguage': settings.language
+    };
+
+    Object.keys(fields).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = fields[id] || '';
+    });
+
     // Checkbox
     const notifCheck = document.getElementById('settingNotifications');
     const autoSaveCheck = document.getElementById('settingAutoSave');
@@ -475,24 +494,24 @@ const saveSettings = () => {
         notifications: document.getElementById('settingNotifications').checked,
         autoSave: document.getElementById('settingAutoSave').checked
     };
-    
+
     state.settings = settings;
     saveSettingsToStorage(settings);
     showToast('Pengaturan berhasil disimpan!');
-    
+
     // Update informasi di website
     updateCompanyInfo();
 };
 
 const updateCompanyInfo = () => {
     const settings = state.settings;
-    // Update di berbagai tempat jika diperlukan
+    // Update footer atau bagian lain jika diperlukan
     console.log('Company info updated:', settings);
 };
 
 const resetSettings = () => {
     if (confirm('Apakah Anda yakin ingin mengembalikan pengaturan ke default?')) {
-        state.settings = {...defaultSettings};
+        state.settings = { ...defaultSettings };
         saveSettingsToStorage(defaultSettings);
         loadSettings();
         showToast('Pengaturan berhasil direset ke default');
@@ -612,7 +631,11 @@ const loadDashboard = () => {
     tbody.innerHTML = recent.length === 0 ? `<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--gray-500);">Belum ada pesanan</td></tr>` : recent.map(o => `<tr><td style="color: var(--white); font-weight: 600;">${o.orderId}</td><td>${o.companyName}</td><td>-</td><td>Rp ${formatNumber(o.totalEstimate)}</td><td><span class="admin-role-badge">${o.status}</span></td><td>${new Date(o.createdAt).toLocaleDateString('id-ID')}</td></tr>`).join('');
 };
 
-const handleContactSubmit = (e) => { e.preventDefault(); showToast('Pesan berhasil dikirim! Tim kami akan menghubungi Anda segera.'); e.target.reset(); };
+const handleContactSubmit = (e) => {
+    e.preventDefault();
+    showToast('Pesan berhasil dikirim! Tim kami akan menghubungi Anda segera.');
+    e.target.reset();
+};
 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
