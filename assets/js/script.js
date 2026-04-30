@@ -371,7 +371,6 @@ const submitCalculation = () => {
     });
     if (!valid) { showToast('Please fill in all required fields'); return; }
 
-    // Simple pricing logic
     let base = Math.floor(Math.random() * 5000000) + 500000;
     const qty = parseInt(formData.quantity) || 1;
     const weight = parseInt(formData.weight) || 0;
@@ -394,8 +393,6 @@ const submitCalculation = () => {
     saveCartToStorage();
     renderCartSummary();
     showToast(`${state.currentItem.name} added to cart!`);
-    
-    // Reset view
     showCategories();
 };
 
@@ -412,6 +409,12 @@ const showAdminPage = (pageName) => {
     if (activeMenu) activeMenu.classList.add('active');
     if (pageName === 'dashboard') loadDashboard();
     if (pageName === 'pengguna') renderUsersTable();
+    if (pageName === 'pengaturan') loadSettings();
+};
+
+const loadSettings = () => {
+    // Fungsi untuk load halaman pengaturan
+    console.log('Loading settings page...');
 };
 
 const renderUsersTable = () => {
@@ -558,7 +561,7 @@ document.addEventListener('input', (e) => {
     }
 });
 
-// Event Delegation untuk Menu Admin (Termasuk Tombol Settings)
+// Event Delegation untuk Menu Admin
 document.addEventListener('click', (e) => {
     const menuItem = e.target.closest('.admin-menu-item');
     if (menuItem) {
