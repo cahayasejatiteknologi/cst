@@ -541,6 +541,12 @@
             if (menuItem) {
                 const pageName = menuItem.getAttribute('data-admin-page');
                 if (pageName) showAdminPage(pageName);
+                 // Event Delegation untuk Menu Admin
+        document.addEventListener('click', (e) => {
+            const menuItem = e.target.closest('.admin-menu-item');
+            if (menuItem) {
+                const pageName = menuItem.getAttribute('data-admin-page');
+                if (pageName) showAdminPage(pageName);
             }
         });
 
