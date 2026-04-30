@@ -133,6 +133,7 @@ const calcFields = {
 // State
 const CART_STORAGE_KEY = 'logi_cart';
 const USERS_STORAGE_KEY = 'logi_users';
+const SETTINGS_STORAGE_KEY = 'logi_settings';
 
 const loadCartFromStorage = () => {
     try {
@@ -147,6 +148,33 @@ const defaultUsers = [
     { name: 'Almano Setiawan', email: 'admin@cstlogistic.co.id', role: 'Admin', status: 'Aktif' },
     { name: 'Rina Wijaya', email: 'sales@cstlogistic.co.id', role: 'Sales / Agen', status: 'Aktif' }
 ];
+
+const defaultSettings = {
+    companyName: 'PT. Cahaya Sejati Teknologi',
+    email: 'info@cstlogistic.co.id',
+    phone: '+62 21 1234 5678',
+    address: 'Jl. Gatot Subroto No. 123, Jakarta Selatan',
+    whatsapp: '+62 818-6573-29',
+    taxRate: '11',
+    currency: 'IDR',
+    language: 'id',
+    notifications: true,
+    autoSave: true
+};
+
+const loadSettingsFromStorage = () => {
+    try {
+        const saved = JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) || 'null');
+        if (!saved) return {...defaultSettings};
+        return {...defaultSettings, ...saved};
+    } catch (error) {
+        return {...defaultSettings};
+    }
+};
+
+const saveSettingsToStorage = (settings) => {
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+};
 
 const loadUsersFromStorage = () => {
     try {
@@ -172,6 +200,7 @@ const state = {
     currentItem: null,
     cart: loadCartFromStorage(),
     users: loadUsersFromStorage(),
+    settings: loadSettingsFromStorage(),
     userEditIndex: null,
     orders: JSON.parse(localStorage.getItem('logi_orders') || '[]')
 };
@@ -412,10 +441,64 @@ const showAdminPage = (pageName) => {
     if (pageName === 'pengaturan') loadSettings();
 };
 
+// ==================== FITUR PENGATURAN ====================
 const loadSettings = () => {
-    // Fungsi untuk load halaman pengaturan
-    console.log('Loading settings page...');
+    const settings = state.settings;
+    
+    // Isi form dengan data yang tersimpan
+    document.getElementById('settingCompanyName').value = settings.companyName || '';
+    document.getElementById('settingEmail').value = settings.email || '';
+    document.getElementById('settingPhone').value = settings.phone || '';
+    document.getElementById('settingAddress').value = settings.address || '';
+    document.getElementById('settingWhatsapp').value = settings.whatsapp || '';
+    document.getElementById('settingTaxRate').value = settings.taxRate || '11';
+    document.getElementById('settingCurrency').value = settings.currency || 'IDR';
+    document.getElementById('settingLanguage').value = settings.language || 'id';
+    
+    // Checkbox
+    const notifCheck = document.getElementById('settingNotifications');
+    const autoSaveCheck = document.getElementById('settingAutoSave');
+    if (notifCheck) notifCheck.checked = settings.notifications !== false;
+    if (autoSaveCheck) autoSaveCheck.checked = settings.autoSave !== false;
 };
+
+const saveSettings = () => {
+    const settings = {
+        companyName: document.getElementById('settingCompanyName').value,
+        email: document.getElementById('settingEmail').value,
+        phone: document.getElementById('settingPhone').value,
+        address: document.getElementById('settingAddress').value,
+        whatsapp: document.getElementById('settingWhatsapp').value,
+        taxRate: document.getElementById('settingTaxRate').value,
+        currency: document.getElementById('settingCurrency').value,
+        language: document.getElementById('settingLanguage').value,
+        notifications: document.getElementById('settingNotifications').checked,
+        autoSave: document.getElementById('settingAutoSave').checked
+    };
+    
+    state.settings = settings;
+    saveSettingsToStorage(settings);
+    showToast('Pengaturan berhasil disimpan!');
+    
+    // Update informasi di website
+    updateCompanyInfo();
+};
+
+const updateCompanyInfo = () => {
+    const settings = state.settings;
+    // Update di berbagai tempat jika diperlukan
+    console.log('Company info updated:', settings);
+};
+
+const resetSettings = () => {
+    if (confirm('Apakah Anda yakin ingin mengembalikan pengaturan ke default?')) {
+        state.settings = {...defaultSettings};
+        saveSettingsToStorage(defaultSettings);
+        loadSettings();
+        showToast('Pengaturan berhasil direset ke default');
+    }
+};
+// ==================== AKHIR FITUR PENGATURAN ====================
 
 const renderUsersTable = () => {
     const tbody = document.getElementById('usersTableBody');
