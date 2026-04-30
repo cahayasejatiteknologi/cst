@@ -535,4 +535,12 @@
                 });
             }
         });
+        // Event Delegation untuk Menu Admin (Dashboard, Pengguna, Pengaturan, dll)
+        document.addEventListener('click', (e) => {
+            const menuItem = e.target.closest('.admin-menu-item');
+            if (menuItem) {
+                const pageName = menuItem.getAttribute('data-admin-page');
+                if (pageName) showAdminPage(pageName);
+            }
+        });
 
