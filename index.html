@@ -537,11 +537,60 @@
                         <button class="admin-close-btn" onclick="closeAdmin()"><i class="fas fa-times"></i> Tutup</button>
                     </div>
                     <div class="admin-content-body">
-                        <div class="admin-data-card" style="padding: 60px; text-align: center;">
-                            <i class="fas fa-cog" style="font-size: 64px; color: var(--gray-600); margin-bottom: 20px;"></i>
-                            <h3 style="color: var(--white); margin-bottom: 10px;">Pengaturan Sistem</h3>
-                            <p style="color: var(--gray-500);">Fitur pengaturan sedang dalam pengembangan</p>
-                        </div>
+                        <div class="admin-data-card" style="padding: 30px;">
+
+                    <div class="field-group">
+                        <label>Nama Perusahaan</label>
+                        <input id="settingCompanyName" class="field-input">
+                    </div>
+                
+                    <div class="field-group">
+                        <label>Email</label>
+                        <input id="settingEmail" class="field-input">
+                    </div>
+                
+                    <div class="field-group">
+                        <label>Telepon</label>
+                        <input id="settingPhone" class="field-input">
+                    </div>
+                
+                    <div class="field-group">
+                        <label>Alamat</label>
+                        <textarea id="settingAddress" class="field-input"></textarea>
+                    </div>
+                
+                    <div class="field-group">
+                        <label>WhatsApp</label>
+                        <input id="settingWhatsapp" class="field-input">
+                    </div>
+                
+                    <div class="field-group">
+                        <label>Pajak (%)</label>
+                        <input id="settingTaxRate" type="number" class="field-input">
+                    </div>
+                
+                    <div class="field-group">
+                        <label>Currency</label>
+                        <select id="settingCurrency" class="field-input">
+                            <option value="IDR">IDR</option>
+                            <option value="USD">USD</option>
+                        </select>
+                    </div>
+                
+                    <div class="field-group">
+                        <label>Bahasa</label>
+                        <select id="settingLanguage" class="field-input">
+                            <option value="id">Indonesia</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                
+                    <div style="margin-top:20px; display:flex; gap:10px;">
+                        <button onclick="saveSettings()" class="btn-primary">Simpan</button>
+                        <button onclick="resetSettings()" class="btn-secondary">Reset</button>
+                    </div>
+                
+                </div>
                     </div>
                 </div>
             </main>
